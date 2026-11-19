@@ -1,5 +1,5 @@
 import type { AltKey, Vote } from "@/lib/types";
-import { VIEWER_POOL } from "@/data/mocks";
+import { SIM_CHAT_USERS } from "@/data/mocks";
 
 /** One vote per user; a user may change their vote while voting is open. */
 export function applyVote(votes: Vote[], user: string, alt: AltKey, at = new Date().toISOString()): Vote[] {
@@ -19,14 +19,14 @@ export function tallyVotes(votes: Vote[], keys: AltKey[]) {
 /** Parses chat commands like "!A" with the configured prefix. */
 export function parseCommand(msg: string, prefix = "!"): AltKey | null {
   const m = msg.trim().match(new RegExp(`^\\${prefix}([a-eA-E])$`));
-  return m ? (m[1].toUpperCase() as AltKey) : null;
+  return m?.[1] ? (m[1].toUpperCase() as AltKey) : null;
 }
 
-/** Simulated chat feed. Replace with a real Twitch IRC/EventSub client later. */
+/** Feed local de votos quando a Twitch não está conectada. */
 export function startSimulatedChat(keys: AltKey[], correct: AltKey, onMessage: (user: string, msg: string) => void, prefix = "!") {
   const bias = 0.45 + Math.random() * 0.3;
   const id = setInterval(() => {
-    const user = VIEWER_POOL[Math.floor(Math.random() * VIEWER_POOL.length)]!;
+    const user = SIM_CHAT_USERS[Math.floor(Math.random() * SIM_CHAT_USERS.length)]!;
     const alt = Math.random() < bias ? correct : keys[Math.floor(Math.random() * keys.length)];
     onMessage(user, `${prefix}${alt}`);
   }, 450 + Math.random() * 500);

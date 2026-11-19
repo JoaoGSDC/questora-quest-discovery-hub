@@ -45,8 +45,7 @@ export function levelFromXp(xp: number) {
   return { level, current: xp - base, needed: next - base, progress: (xp - base) / (next - base) };
 }
 
-export const LEVEL_TITLES = ["Iniciante", "Aprendiz", "Dedicado", "Persistente", "Estrategista", "Avançado", "Especialista", "Mestre", "Lenda"];
-export const levelTitle = (level: number) => LEVEL_TITLES[Math.min(Math.floor((level - 1) / 2), LEVEL_TITLES.length - 1)];
+export const levelTitle = (level: number) => `Nível ${Math.max(1, level)}`;
 
 const dayKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 
@@ -75,13 +74,13 @@ export function computeAchievements(attempts: Attempt[], questions: Question[], 
   const a = (id: string, title: string, description: string, icon: string, value: number, goal: number): Achievement =>
     ({ id, title, description, icon, unlocked: value >= goal, progress: Math.min(value / goal, 1) });
   return [
-    a("first", "Primeiro passo", "Resolva sua primeira questão", "Footprints", attempts.length, 1),
-    a("c10", "Pegando ritmo", "Acerte 10 questões", "Target", correct.length, 10),
-    a("s100", "Centenário", "Resolva 100 questões diferentes", "Trophy", solved, 100),
-    a("streak7", "Semana de ferro", "Estude 7 dias seguidos", "Flame", streak, 7),
-    a("math", "Especialista em Matemática", "Acerte 25 questões de Matemática", "Sigma", subjCorrect("Matemática"), 25),
-    a("interp", "Mestre da Interpretação", "Acerte 15 questões de interpretação", "BookOpen", interp, 15),
-    a("comeback", "Virada", "Acerte após uma sequência de 3 erros", "TrendingUp", comeback ? 1 : 0, 1),
-    a("mastery", "Domínio", "Domine 10 questões", "Crown", mastered, 10),
+    a("first", "Primeira questão", "Resolva sua primeira questão", "Footprints", attempts.length, 1),
+    a("c10", "Dez acertos", "Acerte 10 questões", "Target", correct.length, 10),
+    a("s100", "100 questões", "Resolva 100 questões diferentes", "Trophy", solved, 100),
+    a("streak7", "7 dias seguidos", "Estude 7 dias seguidos", "Flame", streak, 7),
+    a("math", "25 de Matemática", "Acerte 25 questões de Matemática", "Sigma", subjCorrect("Matemática"), 25),
+    a("interp", "15 de interpretação", "Acerte 15 questões de interpretação", "BookOpen", interp, 15),
+    a("comeback", "Recuperação", "Acerte após 3 erros seguidos", "TrendingUp", comeback ? 1 : 0, 1),
+    a("mastery", "10 dominadas", "Domine 10 questões", "Crown", mastered, 10),
   ];
 }
