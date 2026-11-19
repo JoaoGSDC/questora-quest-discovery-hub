@@ -2,17 +2,20 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-export async function GET() {
-  const clientId = process.env['TWITCH_CLIENT_ID'];
+export async function GET(req: Request) {
+  const clientId = process.env["TWITCH_CLIENT_ID"];
+  const url = new URL(req.url);
   const redirect =
-    process.env['TWITCH_REDIRECT_URI'] ??
-    "http://localhost:3000/api/twitch/callback";
+    process.env["TWITCH_REDIRECT_URI"]?.trim() ||
+    `${url.origin}/api/twitch/callback`;
+
   if (!clientId) {
     return NextResponse.json(
       { error: "TWITCH_CLIENT_ID não configurado" },
       { status: 500 },
     );
   }
+
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirect,
