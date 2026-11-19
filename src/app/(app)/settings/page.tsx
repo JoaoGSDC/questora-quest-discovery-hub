@@ -18,6 +18,11 @@ export default function SettingsPage() {
   const [twitchAuth, setTwitchAuth] = useState(false);
   const [busy, setBusy] = useState(false);
   const [origin, setOrigin] = useState("");
+  const [oauthDebug, setOauthDebug] = useState<{
+    clientId: string | null;
+    serverOrigin: string;
+    serverCallback: string;
+  } | null>(null);
 
   useEffect(() => {
     setOrigin(window.location.origin);
@@ -29,7 +34,32 @@ export default function SettingsPage() {
       .then((r) => r.json())
       .then((d: { authenticated?: boolean }) => setTwitchAuth(!!d.authenticated))
       .catch(() => undefined);
+    void fetch("/api/twitch/oauth-config")
+      .then((r) => r.json())
+      .then(setOauthDebug)
+      .catch(() => undefined);
   }, []);
+
+  const startTwitchOAuth = () => {
+    const browserOrigin = window.location.origin;
+    const clientId = oauthDebug?.clientId;
+    if (!clientId) {
+      toast.error("TWITCH_CLIENT_ID ausente no deploy");
+      return;
+    }
+    const redirectUri = `${browserOrigin}/api/twitch/callback`;
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: "code",
+      scope: "chat:read",
+      force_verify: "true",
+    });
+    // Monta o authorize no browser — não passa pelo /api/twitch/oauth
+    window.location.assign(
+      `https://id.twitch.tv/oauth2/authorize?${params.toString()}`,
+    );
+  };
 
   useEffect(() => {
     const t = params.get("twitch");
@@ -99,25 +129,33 @@ export default function SettingsPage() {
       <section className="panel space-y-4 p-5">
         <h2 className="font-display text-sm font-semibold">Transmissão Twitch</h2>
         <p className="text-xs text-muted-foreground">
-          Autorize neste site (a URL da aba). Callback que será enviado:{" "}
-          <code className="break-all text-[11px]">
-            {origin
-              ? `${origin}/api/twitch/callback`
-              : ".../api/twitch/callback"}
-          </code>
-          . Esse endereço precisa estar cadastrado no app Twitch.
+          URL desta aba:{" "}
+          <code className="break-all text-[11px]">{origin || "..."}</code>
         </p>
+        <p className="text-xs text-muted-foreground">
+          Callback que o botão vai enviar:{" "}
+          <code className="break-all text-[11px]">
+            {origin ? `${origin}/api/twitch/callback` : "..."}
+          </code>
+        </p>
+        {oauthDebug && (
+          <p className="text-xs text-muted-foreground">
+            Origem vista pelo servidor:{" "}
+            <code className="break-all text-[11px]">
+              {oauthDebug.serverOrigin}
+            </code>
+          </p>
+        )}
         {origin.includes("localhost") && (
           <p className="text-xs text-warning">
-            Você está em localhost. Se no Twitch só existe o callback da Vercel,
-            abra{" "}
+            Esta aba é localhost. Com callback só da Vercel no Twitch, use{" "}
             <a
               className="underline"
               href="https://questora-quest-discovery-hub.vercel.app/settings"
             >
-              a URL da Vercel
-            </a>{" "}
-            e autorize por lá.
+              questora-quest-discovery-hub.vercel.app/settings
+            </a>
+            .
           </p>
         )}
         <div>
@@ -129,16 +167,13 @@ export default function SettingsPage() {
           />
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button type="button" asChild variant="secondary">
-            <a
-              href={
-                origin
-                  ? `${origin}/api/twitch/oauth?redirect_uri=${encodeURIComponent(`${origin}/api/twitch/callback`)}`
-                  : "/api/twitch/oauth"
-              }
-            >
-              Autorizar Twitch
-            </a>
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={!oauthDebug?.clientId}
+            onClick={startTwitchOAuth}
+          >
+            Autorizar Twitch
           </Button>
           <Button type="button" disabled={busy || !twitchAuth} onClick={connectIrc}>
             Conectar IRC
