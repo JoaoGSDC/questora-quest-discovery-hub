@@ -15,11 +15,12 @@ export async function GET(req: Request) {
     );
   }
 
-  const clientId = process.env['TWITCH_CLIENT_ID'];
-  const clientSecret = process.env['TWITCH_CLIENT_SECRET'];
-  const redirect =
-    process.env["TWITCH_REDIRECT_URI"]?.trim() ||
-    `${url.origin}/api/twitch/callback`;
+  const clientId = process.env["TWITCH_CLIENT_ID"]?.replace(/^["']|["']$/g, "");
+  const clientSecret = process.env["TWITCH_CLIENT_SECRET"]?.replace(
+    /^["']|["']$/g,
+    "",
+  );
+  const redirect = `${url.origin}/api/twitch/callback`;
 
   if (!clientId || !clientSecret) {
     return NextResponse.redirect(

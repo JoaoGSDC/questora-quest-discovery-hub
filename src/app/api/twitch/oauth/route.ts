@@ -3,11 +3,10 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 
 export async function GET(req: Request) {
-  const clientId = process.env["TWITCH_CLIENT_ID"];
+  const clientId = process.env["TWITCH_CLIENT_ID"]?.replace(/^["']|["']$/g, "");
   const url = new URL(req.url);
-  const redirect =
-    process.env["TWITCH_REDIRECT_URI"]?.trim() ||
-    `${url.origin}/api/twitch/callback`;
+  // Sempre a origem da request (localhost em dev, Vercel em prod).
+  const redirect = `${url.origin}/api/twitch/callback`;
 
   if (!clientId) {
     return NextResponse.json(

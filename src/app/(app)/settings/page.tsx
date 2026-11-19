@@ -97,9 +97,9 @@ export default function SettingsPage() {
       <section className="panel space-y-4 p-5">
         <h2 className="font-display text-sm font-semibold">Transmissão Twitch</h2>
         <p className="text-xs text-muted-foreground">
-          1) Crie um app em dev.twitch.tv · 2) Autorize com OAuth · 3) Conecte o IRC
-          na live. Redirect:{" "}
-          <code className="text-[11px]">http://localhost:3000/api/twitch/callback</code>
+          1) App em dev.twitch.tv · 2) Cadastre o callback da Vercel e o de
+          localhost · 3) Autorize · 4) Conecte o IRC na live. Callback:{" "}
+          <code className="text-[11px]">/api/twitch/callback</code>
         </p>
         <div>
           <Label>Canal</Label>
