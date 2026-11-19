@@ -46,12 +46,8 @@ export default function SettingsPage() {
       toast.error("TWITCH_CLIENT_ID ausente no deploy");
       return;
     }
-    // Sempre o callback cadastrado no Twitch (produção), não o origin da aba.
-    // Evita cair em localhost quando a aba/proxy não é a URL canônica.
     const redirectUri =
-      process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "")
-        ? `${process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "")}/api/twitch/callback`
-        : "https://questora-quest-discovery-hub.vercel.app/api/twitch/callback";
+      "https://questora-quest-discovery-hub.vercel.app/api/twitch/callback";
     const params = new URLSearchParams({
       client_id: clientId,
       redirect_uri: redirectUri,
