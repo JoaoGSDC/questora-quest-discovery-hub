@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { setTwitch } from "@/db/repository";
 import { seedIfEmpty } from "@/db/seed";
-import { getRequestOrigin } from "@/lib/request-origin";
+import { getCanonicalAppUrl, getTwitchCallbackUrl } from "@/lib/app-url";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,11 +9,11 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   await seedIfEmpty();
   const url = new URL(req.url);
-  const origin = getRequestOrigin(req);
+  const appUrl = getCanonicalAppUrl();
   const code = url.searchParams.get("code");
   const err = url.searchParams.get("error");
   if (err || !code) {
-    return NextResponse.redirect(new URL("/settings?twitch=error", origin));
+    return NextResponse.redirect(new URL("/settings?twitch=error", appUrl));
   }
 
   const clientId = process.env["TWITCH_CLIENT_ID"]?.replace(/^["']|["']$/g, "");
@@ -21,11 +21,11 @@ export async function GET(req: Request) {
     /^["']|["']$/g,
     "",
   );
-  const redirect = `${origin}/api/twitch/callback`;
+  const redirect = getTwitchCallbackUrl();
 
   if (!clientId || !clientSecret) {
     return NextResponse.redirect(
-      new URL("/settings?twitch=missing_env", origin),
+      new URL("/settings?twitch=missing_env", appUrl),
     );
   }
 
@@ -43,7 +43,7 @@ export async function GET(req: Request) {
 
   if (!tokenRes.ok) {
     return NextResponse.redirect(
-      new URL("/settings?twitch=token_error", origin),
+      new URL("/settings?twitch=token_error", appUrl),
     );
   }
 
@@ -70,6 +70,6 @@ export async function GET(req: Request) {
   });
 
   return NextResponse.redirect(
-    new URL("/settings?twitch=connected", origin),
+    new URL("/settings?twitch=connected", appUrl),
   );
 }
