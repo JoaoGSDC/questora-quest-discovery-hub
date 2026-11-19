@@ -17,8 +17,10 @@ export default function SettingsPage() {
   );
   const [twitchAuth, setTwitchAuth] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [origin, setOrigin] = useState("");
 
   useEffect(() => {
+    setOrigin(window.location.origin);
     void fetch("/api/tutor/status")
       .then((r) => r.json())
       .then(setGemini)
@@ -97,10 +99,27 @@ export default function SettingsPage() {
       <section className="panel space-y-4 p-5">
         <h2 className="font-display text-sm font-semibold">Transmissão Twitch</h2>
         <p className="text-xs text-muted-foreground">
-          1) App em dev.twitch.tv · 2) Cadastre o callback da Vercel e o de
-          localhost · 3) Autorize · 4) Conecte o IRC na live. Callback:{" "}
-          <code className="text-[11px]">/api/twitch/callback</code>
+          Autorize neste site (a URL da aba). Callback que será enviado:{" "}
+          <code className="break-all text-[11px]">
+            {origin
+              ? `${origin}/api/twitch/callback`
+              : ".../api/twitch/callback"}
+          </code>
+          . Esse endereço precisa estar cadastrado no app Twitch.
         </p>
+        {origin.includes("localhost") && (
+          <p className="text-xs text-warning">
+            Você está em localhost. Se no Twitch só existe o callback da Vercel,
+            abra{" "}
+            <a
+              className="underline"
+              href="https://questora-quest-discovery-hub.vercel.app/settings"
+            >
+              a URL da Vercel
+            </a>{" "}
+            e autorize por lá.
+          </p>
+        )}
         <div>
           <Label>Canal</Label>
           <Input
@@ -111,7 +130,15 @@ export default function SettingsPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="button" asChild variant="secondary">
-            <a href="/api/twitch/oauth">Autorizar Twitch</a>
+            <a
+              href={
+                origin
+                  ? `${origin}/api/twitch/oauth?redirect_uri=${encodeURIComponent(`${origin}/api/twitch/callback`)}`
+                  : "/api/twitch/oauth"
+              }
+            >
+              Autorizar Twitch
+            </a>
           </Button>
           <Button type="button" disabled={busy || !twitchAuth} onClick={connectIrc}>
             Conectar IRC
