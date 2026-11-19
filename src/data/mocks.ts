@@ -17,11 +17,11 @@ export function buildMockHistory(): { attempts: Attempt[]; xp: XpEvent[] } {
     if (day > 9 && r() < 0.3) continue; // gaps before the current 9-day streak
     const n = 2 + Math.floor(r() * 5);
     for (let k = 0; k < n; k++) {
-      const q = pool[Math.floor(r() * pool.length)];
+      const q = pool[Math.floor(r() * pool.length)]!;
       const skill = q.difficulty === "easy" ? 0.82 : q.difficulty === "medium" ? 0.65 : 0.45;
       const correct = r() < skill + (28 - day) * 0.006;
       const keys = Object.keys(q.alternatives) as AltKey[];
-      const selected = correct ? q.correctAnswer : keys.filter((x) => x !== q.correctAnswer)[Math.floor(r() * 4)];
+      const selected = correct ? q.correctAnswer : keys.filter((x) => x !== q.correctAnswer)[Math.floor(r() * 4)]!;
       const confidence: Confidence = correct ? (r() < 0.65 ? "sure" : r() < 0.6 ? "doubt" : "guess") : r() < 0.4 ? "sure" : "doubt";
       const date = new Date(today - day * DAY + (9 + k) * 3600000 + Math.floor(r() * 3000000)).toISOString();
       attempts.push({ id: `seed-a-${day}-${k}`, questionId: q.id, date, selected, correct, timeSpent: 40 + Math.floor(r() * 200), confidence, hasDraft: r() < 0.3 });

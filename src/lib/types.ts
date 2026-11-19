@@ -9,16 +9,16 @@ export interface Question {
   statement: string;
   alternatives: Partial<Record<AltKey, string>>;
   correctAnswer: AltKey;
-  explanation?: string;
+  explanation?: string | undefined;
   subject: string;
   topic: string;
-  subtopic?: string;
+  subtopic?: string | undefined;
   difficulty: Difficulty;
-  board?: string;
-  exam?: string;
+  board?: string | undefined;
+  exam?: string | undefined;
   tags: string[];
-  image?: string;
-  source?: string;
+  image?: string | undefined;
+  source?: string | undefined;
 }
 
 export interface Attempt {
@@ -30,7 +30,7 @@ export interface Attempt {
   timeSpent: number; // seconds
   confidence: Confidence;
   hasDraft: boolean;
-  sessionId?: string;
+  sessionId?: string | undefined;
 }
 
 export interface QuestionFlags { favorite?: boolean; review?: boolean }
@@ -52,9 +52,9 @@ export interface TutorExplanation {
 
 export interface NotebookEntry {
   questionId: string;
-  explanation?: TutorExplanation;
+  explanation?: TutorExplanation | undefined;
   chat: ChatMessage[];
-  personalNotes?: string;
+  personalNotes?: string | undefined;
   formulas: string[];
   concepts: string[];
   updatedAt: string;
@@ -65,15 +65,15 @@ export interface XpEvent { id: string; date: string; amount: number; reason: str
 export interface CustomList { id: string; name: string; questionIds: string[]; createdAt: string }
 
 export interface SessionConfig {
-  subject?: string;
-  topic?: string;
-  difficulty?: Difficulty | "any";
+  subject?: string | undefined;
+  topic?: string | undefined;
+  difficulty?: Difficulty | "any" | undefined;
   count: number;
   filter: "all" | "unanswered" | "wrong" | "review" | "favorites";
   shuffle: boolean;
-  timeLimitMin?: number;
+  timeLimitMin?: number | undefined;
   kind: "study" | "exam" | "review" | "list";
-  title?: string;
+  title?: string | undefined;
 }
 
 export interface StudySession {
@@ -82,7 +82,7 @@ export interface StudySession {
   questionIds: string[];
   index: number;
   startedAt: string;
-  finishedAt?: string;
+  finishedAt?: string | undefined;
   answers: Record<string, { selected: AltKey; correct: boolean; confidence: Confidence; timeSpent: number }>;
   xpEarned: number;
 }

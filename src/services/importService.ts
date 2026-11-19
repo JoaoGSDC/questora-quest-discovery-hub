@@ -26,7 +26,7 @@ const standardFormat: ImportFormat = {
     if (!d.subject) r.warnings.push("Campo \"subject\" ausente no arquivo; questões sem disciplina usarão \"Sem disciplina\".");
     d.questions.forEach((q: any, i: number) => {
       const label = `Questão ${i + 1}${q?.id ? ` (${q.id})` : ""}`;
-      if (!q || typeof q !== "object") return r.errors.push(`${label}: não é um objeto.`);
+      if (!q || typeof q !== "object") { r.errors.push(`${label}: não é um objeto.`); return; }
       if (!q.statement || typeof q.statement !== "string") r.errors.push(`${label}: campo "statement" obrigatório.`);
       const alts = q.alternatives;
       if (!alts || typeof alts !== "object") { r.errors.push(`${label}: campo "alternatives" obrigatório.`); return; }

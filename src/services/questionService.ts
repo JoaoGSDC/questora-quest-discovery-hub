@@ -7,7 +7,7 @@ import type { Attempt, Question, QuestionFlags, QuestionStatus } from "@/lib/typ
 export function isMastered(attempts: Attempt[]): boolean {
   if (!attempts.length) return false;
   const sorted = [...attempts].sort((a, b) => a.date.localeCompare(b.date));
-  if (!sorted[sorted.length - 1].correct) return false;
+  if (!sorted[sorted.length - 1]!.correct) return false;
   const days = new Set(sorted.filter((a) => a.correct && a.confidence === "sure").map((a) => a.date.slice(0, 10)));
   return days.size >= 2;
 }

@@ -12,7 +12,7 @@ export function tallyVotes(votes: Vote[], keys: AltKey[]) {
   const counts = Object.fromEntries(keys.map((k) => [k, 0])) as Record<AltKey, number>;
   for (const v of votes) if (v.alt in counts) counts[v.alt]++;
   const total = votes.length;
-  const top = total ? keys.reduce((a, b) => (counts[b] > counts[a] ? b : a)) : undefined;
+  const top = total ? keys.reduce((a, b) => (counts[b] > counts[a] ? b : a), keys[0]!) : undefined;
   return { counts, total, top, pct: (k: AltKey) => (total ? Math.round((counts[k] / total) * 100) : 0) };
 }
 
@@ -26,7 +26,7 @@ export function parseCommand(msg: string, prefix = "!"): AltKey | null {
 export function startSimulatedChat(keys: AltKey[], correct: AltKey, onMessage: (user: string, msg: string) => void, prefix = "!") {
   const bias = 0.45 + Math.random() * 0.3;
   const id = setInterval(() => {
-    const user = VIEWER_POOL[Math.floor(Math.random() * VIEWER_POOL.length)];
+    const user = VIEWER_POOL[Math.floor(Math.random() * VIEWER_POOL.length)]!;
     const alt = Math.random() < bias ? correct : keys[Math.floor(Math.random() * keys.length)];
     onMessage(user, `${prefix}${alt}`);
   }, 450 + Math.random() * 500);
